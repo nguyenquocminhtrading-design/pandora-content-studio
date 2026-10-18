@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pandora Sales Content Studio — Copy-Paste Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #d53f8c;
+      --primary-hover: #b83280;
+      --primary-subtle: #fdf2f8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-focus: #f472b6;
+      --success: #10b981;
+      --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #831843;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #fce7f3;
+      color: #be185d;
+      font-weight: 600;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .collection-select {
+      font-size: 12.5px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #ffffff;
+      color: var(--text);
+      outline: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .collection-select:focus { border-color: var(--border-focus); }
+    .proxy-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .proxy-status:hover { background: #e2e8f0; }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+    .dot.active { background: #10b981; box-shadow: 0 0 8px #10b981; }
+    .dot.error { background: #ef4444; }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      max-width: 1640px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 16px 20px;
+      gap: 20px;
+      height: calc(100vh - 61px);
+    }
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; height: auto; }
+    }
+
+    /* Left Sidebar: Product Library */
+    .sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-box {
+      width: 100%;
+      padding: 9px 34px 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+      background: #f8fafc;
+    }
+    .search-box:focus {
+      background: #ffffff;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(213, 63, 140, 0.12);
+    }
+    .search-clear {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 14px;
+      display: none;
+      line-height: 1;
+    }
+
+    /* Category Filter Tabs / Pills */
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .category-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+    .category-pills::-webkit-scrollbar {
+      height: 3px;
+    }
+    .category-pills::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .pill {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 11px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .pill:hover {
+      background: #f1f5f9;
+      color: var(--text);
+      border-color: #cbd5e1;
+    }
+    .pill.active {
+      background: #be185d;
+      color: #ffffff;
+      border-color: #be185d;
+      box-shadow: 0 2px 6px rgba(190, 24, 93, 0.25);
+    }
+    .pill-count {
+      font-size: 10px;
+      background: rgba(0, 0, 0, 0.08);
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .pill.active .pill-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    /* Sub-category Pills (Vòng mềm, tennis, kiềng, mắt xích...) */
+    .subcat-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      padding: 2px 0;
+      scrollbar-width: none;
+    }
+    .subcat-row::-webkit-scrollbar { display: none; }
+    .subcat-pill {
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 12px;
+      background: #f1f5f9;
+      color: #475569;
+      cursor: pointer;
+      white-space: nowrap;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .subcat-pill:hover { background: #e2e8f0; }
+    .subcat-pill.active {
+      background: #fce7f3;
+      color: #be185d;
+      border-color: #f472b6;
+      font-weight: 600;
+    }
+
+    /* Secondary Collection Filter */
+    .collection-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      font-size: 11.5px;
+    }
+    .col-label {
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .col-pill {
+      padding: 3px 9px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      color: #64748b;
+      cursor: pointer;
+      white-space: nowrap;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .col-pill:hover { background: #f1f5f9; color: var(--text); }
+    .col-pill.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+      font-weight: 600;
+    }
+
+    .filter-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      padding: 0 2px;
+    }
+
+    .product-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .product-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .product-item:hover {
+      background: #f8fafc;
+      border-color: var(--border);
+    }
+    .product-item.selected {
+      background: var(--primary-subtle);
+      border-color: #f472b6;
+    }
+    .product-item img {
+      width: 58px;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #eee;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .product-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .product-info h4 {
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .product-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .product-info .price {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #be185d;
+    }
+    .product-info .tag-badge {
+      font-size: 10px;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 1px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* Right Studio: Editor & Copy cards */
+    .studio {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .product-banner {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: var(--shadow);
+    }
+    .product-banner img {
+      width: 74px;
+      height: 74px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .product-banner-details { flex: 1; min-width: 0; }
+    .product-banner-details h2 { font-size: 15.5px; font-weight: 700; }
+    .product-banner-details .price-row {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      margin-top: 4px;
+    }
+    .price-main { font-size: 17px; font-weight: 700; color: #be185d; }
+    .price-compare { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
+    .discount-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      background: #e11d48;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Controls box */
+    .controls {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-end;
+      box-shadow: var(--shadow);
+    }
+    .control-field { flex: 1; }
+    .control-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    .control-field input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+    .control-field input:focus { border-color: var(--border-focus); }
+    .btn-generate {
+      background: linear-gradient(135deg, #ec4899, #be185d);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 13.5px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(219, 39, 119, 0.25);
+    }
+    .btn-generate:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+    .btn-generate:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* 3 Copy Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .copy-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .copy-card:hover {
+      border-color: #cbd5e1;
+    }
+    .card-header {
+      padding: 12px 16px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+    .copy-card textarea {
+      flex: 1;
+      min-height: 230px;
+      padding: 14px;
+      border: none;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #1e293b;
+      background: #ffffff;
+    }
+    .copy-card textarea:focus {
+      background: #fffdfd;
+    }
+    .card-footer {
+      padding: 10px 16px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .char-count {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .btn-copy {
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-copy:hover {
+      background: #1e293b;
+    }
+    .btn-copy.copied {
+      background: #10b981;
+    }
+
+    /* Modal for settings */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.2s;
+    }
+    .modal-overlay.open {
+      visibility: visible;
+      opacity: 1;
+    }
+    .modal {
+      background: #ffffff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn-secondary {
+      padding: 8px 16px;
+      background: #f1f5f9;
+      color: #334155;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .btn-primary {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+      <span>Pandora Copy Studio</span>
+      <span class="badge" id="productCountBadge">Đang tải...</span>
+    </div>
+
+    <div class="header-actions">
+      <!-- Collection Selector: All Catalog vs fday -->
+      <select class="collection-select" id="collectionSelect" onchange="switchCollection(this.value)">
+        <option value="all">📦 Toàn bộ danh mục Pandora (941 SP)</option>
+        <option value="fday">🎉 Chiến dịch 20/10 - FDAY (886 SP)</option>
+      </select>
+
+      <div class="proxy-status" id="proxyStatusBtn" onclick="openSettingsModal()">
+        <span class="dot" id="proxyDot"></span>
+        <span id="proxyStatusText">Localhost:3001</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left: Product Browser -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <!-- Search bar with clear button -->
+        <div class="search-wrapper">
+          <input type="text" class="search-box" id="searchInput" placeholder="🔍 Tìm vòng tay, nhẫn, bạc, mã SKU..." oninput="handleSearchInput()">
+          <button class="search-clear" id="searchClearBtn" onclick="clearSearch()" title="Xóa tìm kiếm">✕</button>
+        </div>
+
+        <!-- 6 Main Pandora Category Pills -->
+        <div class="filter-section">
+          <div class="category-pills" id="categoryPills">
+            <div class="pill active" data-cat="all" onclick="selectCategory('all')">
+              <span>🌟 Tất cả</span>
+              <span class="pill-count" id="count-all">0</span>
+            </div>
+            <div class="pill" data-cat="bracelet" onclick="selectCategory('bracelet')">
+              <span>⭕ Vòng tay</span>
+              <span class="pill-count" id="count-bracelet">0</span>
+            </div>
+            <div class="pill" data-cat="charm" onclick="selectCategory('charm')">
+              <span>🔮 Charm & Hạt</span>
+              <span class="pill-count" id="count-charm">0</span>
+            </div>
+            <div class="pill" data-cat="necklace" onclick="selectCategory('necklace')">
+              <span>📿 Dây chuyền</span>
+              <span class="pill-count" id="count-necklace">0</span>
+            </div>
+            <div class="pill" data-cat="ring" onclick="selectCategory('ring')">
+              <span>💍 Nhẫn</span>
+              <span class="pill-count" id="count-ring">0</span>
+            </div>
+            <div class="pill" data-cat="earring" onclick="selectCategory('earring')">
+              <span>💎 Hoa tai</span>
+              <span class="pill-count" id="count-earring">0</span>
+            </div>
+            <div class="pill" data-cat="combo" onclick="selectCategory('combo')">
+              <span>🎁 Combo</span>
+              <span class="pill-count" id="count-combo">0</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Sub-category Pills (Vòng mềm, tennis, kiềng, mắt xích...) -->
+          <div class="subcat-row" id="subcatRow" style="display: none;">
+            <!-- Rendered dynamically depending on active category -->
+          </div>
+
+          <!-- Secondary Collection Filter (Moments, ME, Timeless) -->
+          <div class="collection-row">
+            <span class="col-label">BST:</span>
+            <div class="col-pill active" data-col="all" onclick="selectCollection('all')">Tất cả</div>
+            <div class="col-pill" data-col="moments" onclick="selectCollection('moments')">Moments</div>
+            <div class="col-pill" data-col="me" onclick="selectCollection('me')">Pandora ME</div>
+            <div class="col-pill" data-col="timeless" onclick="selectCollection('timeless')">Timeless</div>
+          </div>
+        </div>
+
+        <div class="filter-status-bar">
+          <span id="filterResultCount">Hiển thị 0 sản phẩm</span>
+        </div>
+      </div>
+
+      <div class="product-list" id="productList">
+        <div style="padding: 24px; text-align: center; color: #94a3b8; font-size: 13px;">Đang tải danh mục sản phẩm...</div>
+      </div>
+    </aside>
+
+    <!-- Right: Studio & Output -->
+    <section class="studio">
+      <!-- Active Product Banner -->
+      <div class="product-banner" id="productBanner">
+        <img src="" id="bannerImg" alt="Thumbnail">
+        <div class="product-banner-details">
+          <h2 id="bannerTitle">Chọn một sản phẩm từ danh sách bên trái</h2>
+          <div class="price-row" id="bannerPriceRow">
+            <span class="price-main" id="bannerPrice">-</span>
+            <span class="price-compare" id="bannerCompare"></span>
+            <span class="discount-badge" id="bannerDiscount" style="display:none"></span>
+          </div>
+          <div style="margin-top: 5px;">
+            <a href="#" id="bannerLink" target="_blank" style="font-size: 12px; color: #2563eb; text-decoration: none;">Xem link gốc tại Pandora ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls & Prompt Customizer -->
+      <div class="controls">
+        <div class="control-field">
+          <label>Tên khách hàng (để cá nhân hóa tin nhắn)</label>
+          <input type="text" id="custNameInput" placeholder="VD: Chị Mai, Anh Tuấn...">
+        </div>
+        <div class="control-field" style="flex: 2;">
+          <label>Ghi chú tư vấn riêng / Chương trình quà tặng kèm theo</label>
+          <input type="text" id="notesInput" placeholder="VD: Khách thích vòng chữa lành, tặng ô dù cho đơn từ 3.9tr...">
+        </div>
+        <button class="btn-generate" id="generateBtn" onclick="generateCopies()" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+          <span id="generateBtnText">✨ Tạo 3 Mẫu Bài Viết</span>
+        </button>
+      </div>
+
+      <!-- 3 Copies Output Grid -->
+      <div class="cards-grid">
+        <!-- 1. Zalo 1-1 -->
+        <div class="copy-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>💬</span>
+              <span>Tin nhắn Zalo 1-1</span>
+            </div>
+            <span class="badge" style="background:#e0f2fe; color:#0369a1;">Tư vấn khách</span>
+          </div>
+          <textarea id="copyZalo" placeholder="Nội dung tin nhắn Zalo sẽ xuất hiện ở đây... Bạn có thể chỉnh sửa trực tiếp trước khi copy."></textarea>
+          <div class="card-footer">
+            <span class="char-count" id="countZalo">0 ký tự</span>
+            <button class="btn-copy" onclick="copyText('copyZalo', this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <span>📋 Copy Zalo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Social Post -->
+        <div class="copy-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📱</span>
+              <span>Caption Social / Story</span>
+            </div>
+            <span class="badge" style="background:#fef3c7; color:#b45309;">Facebook & Zalo Post</span>
+          </div>
+          <textarea id="copySocial" placeholder="Nội dung bài đăng mạng xã hội kèm emoji và hashtag sẽ xuất hiện ở đây..."></textarea>
+          <div class="card-footer">
+            <span class="char-count" id="countSocial">0 ký tự</span>
+            <button class="btn-copy" onclick="copyText('copySocial', this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <span>📋 Copy Social</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Short Pitch -->
+        <div class="copy-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>⚡</span>
+              <span>Chào hàng siêu ngắn</span>
+            </div>
+            <span class="badge" style="background:#f1f5f9; color:#475569;">Gửi kèm ảnh / 2-3 câu</span>
+          </div>
+          <textarea id="copyShort" placeholder="Nội dung tóm tắt siêu ngắn để gửi kèm ảnh hoặc nhắn tin nhanh..."></textarea>
+          <div class="card-footer">
+            <span class="char-count" id="countShort">0 ký tự</span>
+            <button class="btn-copy" onclick="copyText('copyShort', this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <span>📋 Copy Ngắn</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings Modal (Localhost Proxy / API Key) -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <h3>⚙️ Cài đặt Local LLM Proxy</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        Kết nối tới endpoint xoay model tại máy của bạn:
+      </p>
+
+      <div class="form-group">
+        <label>Proxy URL</label>
+        <input type="text" id="cfgUrl" value="http://localhost:3001/v1">
+      </div>
+
+      <div class="form-group">
+        <label>API Key (của proxy xoay model)</label>
+        <input type="password" id="cfgApiKey" placeholder="Nhập API key của localhost:3001...">
+      </div>
+
+      <div class="form-group">
+        <label>Tên Model (Model ID)</label>
+        <input type="text" id="cfgModel" value="auto" placeholder="VD: auto, gemini-flash, free-router...">
+      </div>
+
+      <div id="testConnectionStatus" style="font-size: 12.5px; margin-top: 10px; display: none;"></div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="testConnection()">Kiểm tra kết nối</button>
+        <button class="btn-primary" onclick="saveSettings()">Lưu cài đặt</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let currentCollectionHandle = 'all';
+    let allProducts = [];
+    let displayedProducts = [];
+    let selectedProduct = null;
+    let currentCategory = 'all';
+    let currentSubcategory = 'all';
+    let currentCollection = 'all';
+
+    // Subcategory definitions mapped to productType / title keywords
+    const SUBCATEGORIES = {
+      bracelet: [
+        { id: 'all', label: 'Tất cả vòng' },
+        { id: 'vong-mem', label: 'Vòng mềm', match: 'vòng mềm' },
+        { id: 'tennis', label: 'Vòng tennis', match: 'tennis' },
+        { id: 'xich', label: 'Vòng mắt xích', match: 'xích' },
+        { id: 'kieng', label: 'Vòng kiềng', match: 'kiềng' },
+        { id: 'day-ben', label: 'Vòng dây bện', match: 'bện' },
+        { id: 'day-da', label: 'Vòng dây da', match: 'da' },
+        { id: 'day-rut', label: 'Vòng dây rút', match: 'rút' }
+      ],
+      charm: [
+        { id: 'all', label: 'Tất cả charm' },
+        { id: 'charm-xo', label: 'Charm xỏ', match: 'charm' },
+        { id: 'charm-treo', label: 'Charm treo', match: 'treo' },
+        { id: 'me-day', label: 'Mề đay', match: 'mề đay' },
+        { id: 'mini-charm', label: 'Mini charm', match: 'mini' },
+        { id: 'clip', label: 'Charm bấm / Clip', match: 'bấm' },
+        { id: 'safety', label: 'Xích an toàn', match: 'xích an toàn' }
+      ],
+      necklace: [
+        { id: 'all', label: 'Tất cả dây' },
+        { id: 'co-mat', label: 'Dây chuyền có mặt', match: 'có mặt' },
+        { id: 'tron', label: 'Dây chuyền trơn', match: 'dây chuyền' },
+        { id: 'mat-day', label: 'Mặt dây chuyền', match: 'mặt dây' }
+      ],
+      ring: [
+        { id: 'all', label: 'Tất cả nhẫn' },
+        { id: 'layer', label: 'Nhẫn layer', match: 'layer' },
+        { id: 'don', label: 'Nhẫn đơn', match: 'đơn' }
+      ],
+      earring: [
+        { id: 'all', label: 'Tất cả hoa tai' },
+        { id: 'nu', label: 'Hoa tai nụ', match: 'nụ' },
+        { id: 'vong', label: 'Hoa tai vòng (Hoop)', match: 'vòng' },
+        { id: 'dai', label: 'Hoa tai dáng dài', match: 'dài' }
+      ]
+    };
+
+    // Load stored settings (defaulting to configured localhost:3001 proxy)
+    let storedApiKey = localStorage.getItem('llm_api_key') || 'freellmapi-db0b02100a84e67c074f72c495cbeb071573a91846c97f46';
+    let storedModel = localStorage.getItem('llm_model') || 'auto';
+    if (!storedModel || storedModel === 'default') {
+      storedModel = 'auto';
+      localStorage.setItem('llm_model', 'auto');
+    }
+    let storedUrl = localStorage.getItem('llm_url') || 'http://localhost:3001/v1';
+
+    document.getElementById('cfgApiKey').value = storedApiKey;
+    document.getElementById('cfgModel').value = storedModel;
+    document.getElementById('cfgUrl').value = storedUrl;
+
+    // Check proxy connectivity on page load
+    testConnection(true);
+
+    // Initial Load - Fetching ALL 941 products of Pandora
+    fetchProducts('all');
+
+    async function switchCollection(handle) {
+      currentCollectionHandle = handle;
+      await fetchProducts(handle);
+    }
+
+    async function fetchProducts(handle = 'all') {
+      document.getElementById('productCountBadge').textContent = 'Đang tải...';
+      try {
+        const res = await fetch(`/api/writer/products?collection=${handle}`);
+        const data = await res.json();
+        allProducts = data.products || [];
+
+        // Precalculate search-friendly normalized strings for instant search
+        allProducts.forEach(p => {
+          p._normalizedSearch = removeAccents(
+            `${p.title} ${p.productType || ''} ${p.vendor || ''} ${(p.tags || []).join(' ')} ${(p.variants || []).map(v => v.sku).join(' ')}`
+          );
+          p._category = detectCategory(p);
+          p._collection = detectCollection(p);
+        });
+
+        document.getElementById('productCountBadge').textContent = `${allProducts.length} Sản phẩm`;
+        updateCategoryCounts();
+        applyFilters();
+
+        if (allProducts.length > 0 && !selectedProduct) {
+          selectProduct(allProducts[0]);
+        }
+      } catch (err) {
+        document.getElementById('productList').innerHTML = `
+          <div style="padding:24px; color:#ef4444; font-size:13px; text-align:center;">
+            Lỗi nạp sản phẩm: ${err.message}
+          </div>
+        `;
+      }
+    }
+
+    function removeAccents(str) {
+      if (!str) return '';
+      return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[đĐ]/g, 'd')
+        .toLowerCase()
+        .trim();
+    }
+
+    /**
+     * Categorizes products accurately into core Pandora segments.
+     * Order of priority is critical: Earring > Necklace > Ring > Charm > Bracelet > Combo.
+     */
+    function detectCategory(p) {
+      const type = (p.productType || '').toLowerCase();
+      const title = (p.title || '').toLowerCase();
+      const text = `${type} ${title}`;
+
+      // 1. Earrings first! (So 'Hoa tai vòng' is categorized as earring, NOT bracelet)
+      if (text.includes('hoa tai') || text.includes('bông tai') || text.includes('khuyên tai') || text.includes('earring')) {
+        return 'earring';
+      }
+      // 2. Necklaces & Pendants
+      if (text.includes('dây chuyền') || text.includes('day chuyen') || text.includes('mặt dây') || text.includes('mat day') || text.includes('necklace') || text.includes('pendant')) {
+        return 'necklace';
+      }
+      // 3. Rings
+      if (text.includes('nhẫn') || text.includes('nhan') || text.includes('ring')) {
+        return 'ring';
+      }
+      // 4. Charms, Clips, Medallions, Safety chains
+      if (text.includes('charm') || text.includes('mề đay') || text.includes('me day') || text.includes('clip') || text.includes('spacer') || text.includes('xích an toàn') || text.includes('safety chain') || text.includes('mắt nối')) {
+        return 'charm';
+      }
+      // 5. Bracelets
+      if (text.includes('vòng') || text.includes('vong') || text.includes('lắc') || text.includes('lac') || text.includes('bangle') || text.includes('bracelet')) {
+        return 'bracelet';
+      }
+      // 6. Combos & Mix
+      if (text.includes('mix') || text.includes('set') || text.includes('combo') || text.includes('gift')) {
+        return 'combo';
+      }
+      return 'other';
+    }
+
+    function detectCollection(p) {
+      const vendor = (p.vendor || '').toLowerCase();
+      const tags = (p.tags || []).join(' ').toLowerCase();
+      const str = `${vendor} ${tags}`;
+
+      if (str.includes('pandora me') || str.includes('me')) return 'me';
+      if (str.includes('timeless')) return 'timeless';
+      if (str.includes('moments')) return 'moments';
+      return 'other';
+    }
+
+    function updateCategoryCounts() {
+      const counts = { all: allProducts.length, bracelet: 0, charm: 0, necklace: 0, ring: 0, earring: 0, combo: 0 };
+      allProducts.forEach(p => {
+        if (counts[p._category] !== undefined) counts[p._category]++;
+      });
+
+      for (const [key, val] of Object.entries(counts)) {
+        const el = document.getElementById(`count-${key}`);
+        if (el) el.textContent = val;
+      }
+    }
+
+    // Category Filter Selection
+    function selectCategory(cat) {
+      currentCategory = cat;
+      currentSubcategory = 'all';
+
+      document.querySelectorAll('#categoryPills .pill').forEach(el => {
+        el.classList.toggle('active', el.dataset.cat === cat);
+      });
+
+      renderSubcategories(cat);
+      applyFilters();
+    }
+
+    function renderSubcategories(cat) {
+      const row = document.getElementById('subcatRow');
+      const subs = SUBCATEGORIES[cat];
+      if (!subs || subs.length === 0) {
+        row.style.display = 'none';
+        row.innerHTML = '';
+        return;
+      }
+
+      row.style.display = 'flex';
+      row.innerHTML = subs.map(s => `
+        <div class="subcat-pill ${currentSubcategory === s.id ? 'active' : ''}" onclick="selectSubcategory('${s.id}')">
+          ${s.label}
+        </div>
+      `).join('');
+    }
+
+    function selectSubcategory(subId) {
+      currentSubcategory = subId;
+      document.querySelectorAll('#subcatRow .subcat-pill').forEach(el => {
+        el.classList.toggle('active', el.textContent.trim() === subId || el.getAttribute('onclick').includes(`'${subId}'`));
+      });
+      applyFilters();
+    }
+
+    function selectCollection(col) {
+      currentCollection = col;
+      document.querySelectorAll('.collection-row .col-pill').forEach(el => {
+        el.classList.toggle('active', el.dataset.col === col);
+      });
+      applyFilters();
+    }
+
+    function handleSearchInput() {
+      const val = document.getElementById('searchInput').value;
+      document.getElementById('searchClearBtn').style.display = val ? 'block' : 'none';
+      applyFilters();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchClearBtn').style.display = 'none';
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const rawQuery = document.getElementById('searchInput').value;
+      const query = removeAccents(rawQuery);
+      const searchTokens = query ? query.split(/\s+/).filter(Boolean) : [];
+
+      const currentSubDef = (SUBCATEGORIES[currentCategory] || []).find(s => s.id === currentSubcategory);
+
+      displayedProducts = allProducts.filter(p => {
+        // 1. Category check
+        if (currentCategory !== 'all' && p._category !== currentCategory) {
+          return false;
+        }
+
+        // 2. Subcategory check
+        if (currentSubcategory !== 'all' && currentSubDef && currentSubDef.match) {
+          const typeAndTitle = `${p.productType || ''} ${p.title || ''}`.toLowerCase();
+          if (!typeAndTitle.includes(currentSubDef.match)) {
+            return false;
+          }
+        }
+
+        // 3. Collection check
+        if (currentCollection !== 'all' && p._collection !== currentCollection) {
+          return false;
+        }
+
+        // 4. Search query check (all tokens must match)
+        if (searchTokens.length > 0) {
+          const hay = p._normalizedSearch;
+          for (const token of searchTokens) {
+            if (!hay.includes(token)) return false;
+          }
+        }
+
+        return true;
+      });
+
+      document.getElementById('filterResultCount').textContent = `Hiển thị ${displayedProducts.length} / ${allProducts.length} sản phẩm`;
+      renderProductList(displayedProducts);
+    }
+
+    function renderProductList(items) {
+      const container = document.getElementById('productList');
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 32px 16px; text-align: center; color: #94a3b8; font-size: 13px;">
+            <div style="font-size: 28px; margin-bottom: 6px;">🔍</div>
+            Không tìm thấy sản phẩm nào khớp với từ khóa hoặc bộ lọc.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(p => {
+        const isSelected = selectedProduct && selectedProduct.id === p.id;
+        const img = p.mainImage || (p.images && p.images[0]) || '';
+        const catBadge = p.productType || (p._category === 'bracelet' ? 'Vòng tay' : p._category === 'charm' ? 'Charm' : p._category === 'necklace' ? 'Dây chuyền' : p._category === 'ring' ? 'Nhẫn' : p._category === 'earring' ? 'Hoa tai' : '');
+
+        return `
+          <div class="product-item ${isSelected ? 'selected' : ''}" onclick='selectProductById("${p.id}")'>
+            <img src="${img}" alt="${escapeHtml(p.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\' fill=\'%23ccc\'><rect width=\'50\' height=\'50\'/></svg>'">
+            <div class="product-info">
+              <h4>${escapeHtml(p.title)}</h4>
+              <div class="product-meta">
+                <span class="price">${p.priceFormatted || 'Liên hệ'}</span>
+                ${catBadge ? `<span class="tag-badge">${escapeHtml(catBadge)}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectProductById(id) {
+      const prod = allProducts.find(p => p.id === id);
+      if (prod) selectProduct(prod);
+    }
+
+    function selectProduct(p) {
+      selectedProduct = p;
+      renderProductList(displayedProducts);
+
+      const img = p.mainImage || (p.images && p.images[0]) || '';
+      document.getElementById('bannerImg').src = img;
+      document.getElementById('bannerTitle').textContent = p.title;
+      document.getElementById('bannerPrice').textContent = p.priceFormatted || 'Liên hệ';
+
+      if (p.compareAtPrice && p.compareAtPrice > p.price) {
+        document.getElementById('bannerCompare').textContent = formatVND(p.compareAtPrice);
+        document.getElementById('bannerDiscount').textContent = `-${p.discountPct}%`;
+        document.getElementById('bannerDiscount').style.display = 'inline-block';
+      } else {
+        document.getElementById('bannerCompare').textContent = '';
+        document.getElementById('bannerDiscount').style.display = 'none';
+      }
+
+      document.getElementById('bannerLink').href = p.url || '#';
+      document.getElementById('generateBtn').disabled = false;
+    }
+
+    async function generateCopies() {
+      if (!selectedProduct) return;
+
+      const btn = document.getElementById('generateBtn');
+      const btnText = document.getElementById('generateBtnText');
+      btn.disabled = true;
+      btnText.textContent = '⏳ Đang viết bài...';
+
+      const apiKey = localStorage.getItem('llm_api_key') || '';
+      const model = localStorage.getItem('llm_model') || 'default';
+      const custName = document.getElementById('custNameInput').value;
+      const notes = document.getElementById('notesInput').value;
+
+      try {
+        const res = await fetch('/api/writer/generate', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            productId: selectedProduct.id,
+            product: selectedProduct,
+            customerName: custName,
+            customNotes: notes,
+            apiKey,
+            model
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || data.error || 'Lỗi khi gọi AI');
+
+        document.getElementById('copyZalo').value = data.copies.zalo || '';
+        document.getElementById('copySocial').value = data.copies.social || '';
+        document.getElementById('copyShort').value = data.copies.short || '';
+
+        updateCharCounts();
+      } catch (err) {
+        alert('Lỗi khi sinh nội dung: ' + err.message + '\n\nVui lòng kiểm tra API Key tại nút Cài đặt Proxy góc trên bên phải.');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = '✨ Tạo 3 Mẫu Bài Viết';
+      }
+    }
+
+    function copyText(elementId, btn) {
+      const textarea = document.getElementById(elementId);
+      textarea.select();
+      navigator.clipboard.writeText(textarea.value);
+
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<span>✅ Đã chép!</span>';
+      btn.classList.add('copied');
+
+      setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('copied');
+      }, 1800);
+    }
+
+    function updateCharCounts() {
+      document.getElementById('countZalo').textContent = `${document.getElementById('copyZalo').value.length} ký tự`;
+      document.getElementById('countSocial').textContent = `${document.getElementById('copySocial').value.length} ký tự`;
+      document.getElementById('countShort').textContent = `${document.getElementById('copyShort').value.length} ký tự`;
+    }
+
+    ['copyZalo', 'copySocial', 'copyShort'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateCharCounts);
+    });
+
+    // Settings Modal Functions
+    function openSettingsModal() {
+      document.getElementById('settingsModal').classList.add('open');
+    }
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('open');
+    }
+
+    async function testConnection(silent = false) {
+      const url = document.getElementById('cfgUrl').value;
+      const apiKey = document.getElementById('cfgApiKey').value;
+      const dot = document.getElementById('proxyDot');
+      const text = document.getElementById('proxyStatusText');
+      const statusDiv = document.getElementById('testConnectionStatus');
+
+      try {
+        const res = await fetch('/api/writer/test-connection', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ url, apiKey })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.ok) {
+          dot.className = 'dot active';
+          text.textContent = `Localhost Proxy (OK)`;
+          if (!silent) {
+            statusDiv.style.display = 'block';
+            statusDiv.style.color = '#10b981';
+            statusDiv.textContent = `✅ ${data.message} (${data.modelsCount} models)`;
+          }
+        } else {
+          dot.className = 'dot error';
+          text.textContent = `Proxy cần API Key`;
+          if (!silent) {
+            statusDiv.style.display = 'block';
+            statusDiv.style.color = '#ef4444';
+            statusDiv.textContent = `⚠️ ${data.message || 'Chưa xác thực'}`;
+          }
+        }
+      } catch (err) {
+        dot.className = 'dot error';
+        text.textContent = 'Mất kết nối Proxy';
+        if (!silent) {
+          statusDiv.style.display = 'block';
+          statusDiv.style.color = '#ef4444';
+          statusDiv.textContent = `❌ ${err.message}`;
+        }
+      }
+    }
+
+    function saveSettings() {
+      const apiKey = document.getElementById('cfgApiKey').value.trim();
+      const model = document.getElementById('cfgModel').value.trim();
+      const url = document.getElementById('cfgUrl').value.trim();
+
+      localStorage.setItem('llm_api_key', apiKey);
+      localStorage.setItem('llm_model', model);
+      localStorage.setItem('llm_url', url);
+
+      testConnection(false);
+      setTimeout(() => closeSettingsModal(), 800);
+    }
+
+    document.getElementById('settingsModal').addEventListener('click', (e) => {
+      if (e.target.id === 'settingsModal') closeSettingsModal();
+    });
+
+    function formatVND(amount) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[tag] || tag));
+    }
+  </script>
+</body>
+</html>

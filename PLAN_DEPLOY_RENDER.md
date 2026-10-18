@@ -120,8 +120,18 @@ Tại phần **Environment Variables** (Biến môi trường) của Render, b�
 ---
 
 ### BƯỚC 4: Bàn giao link cho nhân viên sử dụng
-Render sẽ cấp một đường link HTTPS miễn phí:
-👉 **`https://pandora-studio.onrender.com/writer.html`**
+Render cấp đường link HTTPS miễn phí cho bạn. Đường dẫn chính xác để mở giao diện Studio:
+
+👉 **Link đang chạy trực tiếp ngay bây giờ:**
+**`https://pandora-content-studio.onrender.com/admin/writer.html`**
+
+*(Tương ứng với link bạn chạy ở local: `http://localhost:3000/admin/writer.html`)*
+
+> [!TIP]
+> **Nâng cấp vào thẳng trang chủ:**
+> Đã cấu hình thêm để bạn chỉ cần gõ link rút gọn:
+> 👉 **`https://pandora-content-studio.onrender.com/`** (sẽ tự động mở luôn giao diện Studio mà không cần thêm đuôi `/admin/writer.html`).
+> Chỉ cần push commit mới nhất lên GitHub, Render sẽ tự động cập nhật trong 1 phút!
 
 - Bạn có thể tắt máy tính hoàn toàn.
 - Bất cứ nhân viên nào mở link trên điện thoại hoặc máy tính ở bất kỳ đâu đều có thể:

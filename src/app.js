@@ -7,14 +7,21 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export function createApp({ config, botRouter, zalo, logger, database, knowledge }) {
-  const app = express();
   const root = path.dirname(fileURLToPath(import.meta.url));
+  const publicDir = path.join(root, '..', 'public');
   app.use(express.json({ verify: (req, _res, buffer) => { req.rawBody = buffer; } }));
-  app.get('/', (_req, res) => res.json({ name: config.bot.name, status: 'running' }));
+
+  // Phuc vu truc tiep giao dien Pandora Studio khi vao trang chu /
+  app.get('/', (_req, res) => res.sendFile(path.join(publicDir, 'writer.html')));
+  app.get('/writer', (_req, res) => res.sendFile(path.join(publicDir, 'writer.html')));
+  app.get('/writer.html', (_req, res) => res.sendFile(path.join(publicDir, 'writer.html')));
+  app.get('/api/status', (_req, res) => res.json({ name: config.bot.name, status: 'running' }));
   app.get('/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
   app.get('/ready', async (_req, res) => { try { if (database) await database.ping(); res.json({ status: 'ready' }); } catch (error) { res.status(503).json({ status: 'not_ready', error: error.message }); } });
-  app.use('/admin', express.static(path.join(root, '..', 'public')));
-  app.use('/public', express.static(path.join(root, '..', 'public')));
+
+  app.use(express.static(publicDir));
+  app.use('/admin', express.static(publicDir));
+  app.use('/public', express.static(publicDir));
   app.post('/webhook', verifySignature({ secret: config.zalo.appSecret, headerName: config.zalo.signatureHeader }), createWebhookRouter({ botRouter, zalo, logger }));
   app.use('/api/admin', createAdminRouter({ config, database, knowledge }));
   app.use('/api/writer', createWriterRouter({ config }));
