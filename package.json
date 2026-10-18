@@ -1,0 +1,24 @@
+{
+  "name": "zalo-ai-chatbot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prototype Zalo OA chatbot with rules, LLM fallback, idempotency and health checks.",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test",
+    "check": "node --check src/server.js",
+    "migrate": "node scripts/migrate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "playwright": "^1.64.1"
+  }
+}
