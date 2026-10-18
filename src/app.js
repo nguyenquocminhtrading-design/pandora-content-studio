@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export function createApp({ config, botRouter, zalo, logger, database, knowledge }) {
+  const app = express();
   const root = path.dirname(fileURLToPath(import.meta.url));
   const publicDir = path.join(root, '..', 'public');
   app.use(express.json({ verify: (req, _res, buffer) => { req.rawBody = buffer; } }));
