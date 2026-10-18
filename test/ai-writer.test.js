@@ -126,8 +126,8 @@ test('createAiWriterService automatically falls back from failing provider to ne
   const writer = createAiWriterService({
     config: {
       llm: {
-        gemini: { apiKey: 'mock-gemini-key', model: 'gemini-2.0-flash' },
-        nvidia: { apiKey: 'mock-nvidia-key', model: 'meta/llama-3.3-70b-instruct' }
+        gemini: { apiKey: 'mock-gemini-key', model: 'gemini-3.8-flash' },
+        nvidia: { apiKey: 'mock-nvidia-key', model: 'meta/llama-3.2-11b-vision-instruct' }
       }
     },
     fetchImpl: mockFetch

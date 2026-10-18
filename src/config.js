@@ -16,7 +16,7 @@ export function getConfig({ validateSecrets = false } = {}) {
     llm: {
       provider: (process.env.LLM_PROVIDER || 'gemini').toLowerCase(),
       apiKey: process.env.LLM_API_KEY || '',
-      model: process.env.LLM_MODEL || 'gemini-2.0-flash',
+      model: process.env.LLM_MODEL || 'gemini-3.8-flash',
       apiUrl: process.env.LLM_API_URL || 'https://generativelanguage.googleapis.com/v1beta/models',
       timeoutMs: Number(process.env.LLM_TIMEOUT_MS || 15000),
       localUrl: process.env.LOCAL_LLM_URL || 'http://localhost:3001/v1',
@@ -26,20 +26,15 @@ export function getConfig({ validateSecrets = false } = {}) {
       fallbackApiKey: process.env.LLM_FALLBACK_API_KEY || '',
       fallbackModel: process.env.LLM_FALLBACK_MODEL || '',
       fallbackApiUrl: process.env.LLM_FALLBACK_API_URL || '',
-      // 3 Open Cloud Providers
+      // Cloud LLM Providers (Google Gemini & NVIDIA NIM)
       gemini: {
         apiKey: process.env.GEMINI_API_KEY || '',
-        model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+        model: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
         baseUrl: process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai'
-      },
-      openrouter: {
-        apiKey: process.env.OPENROUTER_API_KEY || '',
-        model: process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
-        baseUrl: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1'
       },
       nvidia: {
         apiKey: process.env.NVIDIA_NIM_API_KEY || '',
-        model: process.env.NVIDIA_NIM_MODEL || 'meta/llama-3.3-70b-instruct',
+        model: process.env.NVIDIA_NIM_MODEL || 'meta/llama-3.2-11b-vision-instruct',
         baseUrl: process.env.NVIDIA_NIM_BASE_URL || 'https://integrate.api.nvidia.com/v1'
       }
     },

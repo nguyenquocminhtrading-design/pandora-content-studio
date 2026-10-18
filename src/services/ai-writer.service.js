@@ -47,7 +47,7 @@ export function createAiWriterService({ config = {}, fetchImpl = fetch }) {
         name: 'Google Gemini',
         baseUrl: config.llm?.gemini?.baseUrl || 'https://generativelanguage.googleapis.com/v1beta/openai',
         apiKey: geminiKey,
-        model: options.model && options.provider === 'gemini' ? options.model : (config.llm?.gemini?.model || 'gemini-2.0-flash')
+        model: options.model && options.provider === 'gemini' ? options.model : (config.llm?.gemini?.model || 'gemini-3.8-flash')
       });
     }
 
@@ -58,22 +58,11 @@ export function createAiWriterService({ config = {}, fetchImpl = fetch }) {
         name: 'NVIDIA NIM',
         baseUrl: config.llm?.nvidia?.baseUrl || 'https://integrate.api.nvidia.com/v1',
         apiKey: nvidiaKey,
-        model: options.model && options.provider === 'nvidia' ? options.model : (config.llm?.nvidia?.model || 'meta/llama-3.3-70b-instruct')
+        model: options.model && options.provider === 'nvidia' ? options.model : (config.llm?.nvidia?.model || 'meta/llama-3.2-11b-vision-instruct')
       });
     }
 
-    // 3. OpenRouter / OpenCode
-    const openrouterKey = options.openrouterApiKey || config.llm?.openrouter?.apiKey;
-    if (openrouterKey) {
-      providers.push({
-        name: 'OpenRouter',
-        baseUrl: config.llm?.openrouter?.baseUrl || 'https://openrouter.ai/api/v1',
-        apiKey: openrouterKey,
-        model: options.model && options.provider === 'openrouter' ? options.model : (config.llm?.openrouter?.model || 'meta-llama/llama-3.3-70b-instruct:free')
-      });
-    }
-
-    // 4. Fallback to Localhost / default configured endpoint
+    // 3. Fallback to Localhost / default configured endpoint
     providers.push({
       name: 'Local/Default Proxy',
       baseUrl: localUrl,
